@@ -3,6 +3,15 @@
 
 #include <type_traits>
 
+// courtesy of Newton
+constexpr double pi_(unsigned n, unsigned i = 1, double last = 2.0) {
+    return i > n + 1 ? 0.0 : last + 
+        pi_(n, i + 1, last * (double)i / (2.0 * (double)i + 1.0));
+}
+
+// 10 digit precision of pi
+constexpr double pi = pi_(30);
+
 template <int>
 struct is_cherry {
     const static bool value = false;
@@ -23,21 +32,37 @@ struct is_apple<2> {
     const static bool value = true;
 };
 
-template <typename R, R radius, typename P, int type>
-class Pie {
+template <typename R, R radius, typename P, int type,
+          typename EnableR = void, typename EnableP = void> 
+class Pie;
 
-    int initialStock;
+template <typename R, R radius, typename P, int type>
+class Pie<R, radius, P, type,
+          typename std::enable_if<std::is_integral<R>::value>::type,
+          typename std::enable_if<std::is_floating_point<P>::value>::type> {
+
+    int stock;
     P price;
 
 public:
     template <int t = type>
-    Pie(int initialStock, typename std::enable_if<is_cherry<t>::value>::type* = nullptr):
-        initialStock(initialStock) {};
+    Pie(int initialStock,
+        typename std::enable_if<is_cherry<t>::value>::type* = nullptr):
+        stock(initialStock) {};
 
     template <int t = type>
-    Pie(int initialStock, P price, typename std::enable_if<is_apple<t>::value>::type* = nullptr):
-        initialStock(initialStock),
+    Pie(int initialStock, P price,
+        typename std::enable_if<is_apple<t>::value>::type* = nullptr):
+        stock(initialStock),
         price(price) {};
+
+    static double getArea() {
+        return pi * radius * radius;
+    }
+
+    int getStock() {
+        return stock;
+    }
 };
 
 template <typename R, R radius>
