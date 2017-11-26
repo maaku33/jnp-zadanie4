@@ -2,9 +2,19 @@
 #include <iostream>
 
 int main() {
-    ApplePie<int, 10, double> applePie(25, 5.5);
-    CherryPie<int, 10> cherryPie(25);
+    ApplePie<int, 10, double> applePie(1, 5.5);
+    CherryPie<int, 10> cherryPie(5);
+
+    applePie.sell();
+    applePie.getPrice();
+
+    // out of stock
+    // applePie.sell();
     
+    // methods should be undefined
+    // cherryPie.sell();
+    // cherryPie.getPrice();
+
     // constructor should be undefined
     // CherryPie<int, 20> cherryPie2(30, 2.5);
 

@@ -2,6 +2,7 @@
 #define __PIE_H__
 
 #include <type_traits>
+#include <cassert>
 
 // courtesy of Newton
 constexpr double pi_(unsigned n, unsigned i = 1, double last = 2.0) {
@@ -45,16 +46,15 @@ class Pie<R, radius, P, type,
     P price;
 
 public:
-    template <int t = type>
-    Pie(int initialStock,
-        typename std::enable_if<is_cherry<t>::value>::type* = nullptr):
-        stock(initialStock) {};
+    template <int t = type, typename std::enable_if<is_cherry<t>::value, int>::type = 0>
+    Pie(int initialStock): stock(initialStock) {
+        assert(initialStock > 0);
+    }
 
-    template <int t = type>
-    Pie(int initialStock, P price,
-        typename std::enable_if<is_apple<t>::value>::type* = nullptr):
-        stock(initialStock),
-        price(price) {};
+    template <int t = type, typename std::enable_if<is_apple<t>::value, int>::type = 0>
+    Pie(int initialStock, P price): stock(initialStock), price(price) {
+        assert(initialStock > 0);
+    }
 
     static double getArea() {
         return pi * radius * radius;
@@ -62,6 +62,23 @@ public:
 
     int getStock() {
         return stock;
+    }
+
+    template <typename ... Buffer, int t = type>
+    typename std::enable_if<is_apple<t>::value, void>::type sell() {
+        static_assert(sizeof ... (Buffer) == 0, 
+            "Template arguments should not be specified.");
+
+        assert(stock > 0);
+        stock--;
+    }
+
+    template <typename ... Buffer, int t = type>
+    typename std::enable_if<is_apple<t>::value, P>::type getPrice() {
+        static_assert(sizeof ... (Buffer) == 0,
+            "Template arguments should not be specified.");
+
+        return price;
     }
 };
 
