@@ -6,7 +6,7 @@
 
 // courtesy of Newton
 constexpr double pi_(unsigned n, unsigned i = 1, double last = 2.0) {
-    return i > n + 1 ? 0.0 : last + 
+    return i > n + 1 ? 0.0 : last +
         pi_(n, i + 1, last * (double)i / (2.0 * (double)i + 1.0));
 }
 
@@ -33,21 +33,20 @@ struct is_apple<2> {
     const static bool value = true;
 };
 
-template <typename R, R radius, typename P, int type,
-          typename EnableR = void, typename EnableP = void> 
-class Pie;
-
 template <typename R, R radius, typename P, int type>
-class Pie<R, radius, P, type,
-          typename std::enable_if<std::is_integral<R>::value>::type,
-          typename std::enable_if<std::is_floating_point<P>::value>::type> {
+class Pie {
+
+    static_assert(std::is_integral<R>::value,
+        "First template parameter not integral.");
+    static_assert(std::is_floating_point<P>::value,
+        "Third template parameter not floating point.");
 
     int stock;
-    P price;
+    const P price;
 
 public:
     template <int t = type, typename std::enable_if<is_cherry<t>::value, int>::type = 0>
-    Pie(int initialStock): stock(initialStock) {
+    Pie(int initialStock): stock(initialStock), price() {
         assert(initialStock > 0);
     }
 
@@ -66,7 +65,7 @@ public:
 
     template <typename ... Buffer, int t = type>
     typename std::enable_if<is_apple<t>::value, void>::type sell() {
-        static_assert(sizeof ... (Buffer) == 0, 
+        static_assert(sizeof ... (Buffer) == 0,
             "Template arguments should not be specified.");
 
         assert(stock > 0);

@@ -8,9 +8,13 @@ int main() {
     applePie.sell();
     applePie.getPrice();
 
+    /* Run-time errors */
+
     // out of stock
     // applePie.sell();
-    
+
+    /* Compile-time errors */
+
     // methods should be undefined
     // cherryPie.sell();
     // cherryPie.getPrice();
@@ -19,7 +23,7 @@ int main() {
     // CherryPie<int, 20> cherryPie2(30, 2.5);
 
     // wrong template type
-    // CherryPie<double, 15> cherryPie3(10);
+    // CherryPie<float, 15.0> cherryPie3(10);
 
     // wrong template type
     // ApplePie<int, 12, int> applePie2(10, 10);
