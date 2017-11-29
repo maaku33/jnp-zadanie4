@@ -4,12 +4,14 @@
 #include <type_traits>
 #include <cassert>
 
-constexpr double ln2_(unsigned n, unsigned i = 0) {
-    return 0.0;
+// returns the value of n-th Taylor polynomial of ln(1 + x) at x
+constexpr double ln_(double x, unsigned n, unsigned i = 1, double last = 1) {
+    return i >= n ? 0.0 : (i % 2 == 0 ? -1 : 1) *
+        x * last / i + ln_(x, n, i + 1, x * last);
 }
 
-// ? digit precision of natural log of 2
-constexpr double ln2 = ln2_(0);
+// 9 digit precision of natural log of 2
+constexpr double ln2 = 3.0 * ln_(0.25, 20) + ln_(0.024, 20);
 
 template <typename T, T length, T width, typename P, bool sellable>
 class Cake {
