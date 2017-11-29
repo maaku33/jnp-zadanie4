@@ -13,27 +13,7 @@ constexpr double pi_(unsigned n, unsigned i = 1, double last = 2.0) {
 // 10 digit precision of pi
 constexpr double pi = pi_(30);
 
-template <int>
-struct is_cherry {
-    const static bool value = false;
-};
-
-template <>
-struct is_cherry<1> {
-    const static bool value = true;
-};
-
-template <int>
-struct is_apple {
-    const static bool value = false;
-};
-
-template <>
-struct is_apple<2> {
-    const static bool value = true;
-};
-
-template <typename R, R radius, typename P, int type>
+template <typename R, R radius, typename P, bool sellable>
 class Pie {
 
     static_assert(std::is_integral<R>::value,
@@ -45,12 +25,12 @@ class Pie {
     const P price;
 
 public:
-    template <int t = type, typename std::enable_if<is_cherry<t>::value, int>::type = 0>
+    template <bool s = sellable, typename std::enable_if<!s, int>::type = 0>
     Pie(int initialStock): stock(initialStock), price() {
         assert(initialStock > 0);
     }
 
-    template <int t = type, typename std::enable_if<is_apple<t>::value, int>::type = 0>
+    template <bool s = sellable, typename std::enable_if<s, int>::type = 0>
     Pie(int initialStock, P price): stock(initialStock), price(price) {
         assert(initialStock > 0);
     }
@@ -63,17 +43,16 @@ public:
         return stock;
     }
 
-    template <typename ... Buffer, int t = type>
-    typename std::enable_if<is_apple<t>::value, void>::type sell() {
+    template <typename ... Buffer, bool s = sellable>
+    typename std::enable_if<s, void>::type sell() {
         static_assert(sizeof ... (Buffer) == 0,
             "Template arguments should not be specified.");
 
-        assert(stock > 0);
-        stock--;
+        stock = stock - (stock > 0 ? 1 : 0);
     }
 
-    template <typename ... Buffer, int t = type>
-    typename std::enable_if<is_apple<t>::value, P>::type getPrice() {
+    template <typename ... Buffer, bool s = sellable>
+    typename std::enable_if<s, P>::type getPrice() {
         static_assert(sizeof ... (Buffer) == 0,
             "Template arguments should not be specified.");
 
@@ -82,9 +61,9 @@ public:
 };
 
 template <typename R, R radius>
-using CherryPie = Pie<R, radius, double, 1>;
+using CherryPie = Pie<R, radius, double, false>;
 
 template <typename R, R radius, typename P>
-using ApplePie = Pie<R, radius, P, 2>;
+using ApplePie = Pie<R, radius, P, true>;
 
 #endif /* __PIE_H__ */
