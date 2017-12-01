@@ -4,7 +4,8 @@
 #include <type_traits>
 #include <cassert>
 
-template <typename T, T length, T width, typename P, bool sellable, bool restockable>
+template <typename T, T length, T width, typename P,
+          bool sellable, bool restockable>
 class Cake {
     
     static_assert(std::is_integral<T>::value,
@@ -13,7 +14,8 @@ class Cake {
     	"Price type is not floating point.");
 
     // returns the value of n-th Taylor polynomial of ln(1 + x) at x
-    constexpr static double ln_(double x, unsigned n, unsigned i = 1, double last = 1) {
+    constexpr static double ln_(double x, unsigned n, 
+                                unsigned i = 1, double last = 1) {
         return i >= n ? 0.0 : (i % 2 == 0 ? -1 : 1) *
             x * last / i + ln_(x, n, i + 1, x * last);
     }

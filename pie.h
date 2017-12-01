@@ -4,7 +4,8 @@
 #include <type_traits>
 #include <cassert>
 
-template <typename R, R radius, typename P, bool sellable, bool restockable>
+template <typename R, R radius, typename P,
+          bool sellable, bool restockable>
 class Pie {
 
     static_assert(std::is_integral<R>::value,
