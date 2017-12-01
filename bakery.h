@@ -4,7 +4,9 @@
 #include <type_traits>
 #include <tuple>
 
-namespace bakery {
+template <typename C, typename A, A shelfArea, typename... P>
+class Bakery {
+
 	/* Checking if elements are unique */
 	template <typename...>
 	struct is_one_of;
@@ -21,10 +23,7 @@ namespace bakery {
 	};
 
 	template <typename...>
-	struct is_unique;
-
-	template <>
-	struct is_unique<> {
+	struct is_unique {
 		static constexpr bool value = true;
 	};
 
@@ -82,18 +81,14 @@ namespace bakery {
 	};
 
 	/* Calculates sum area of all products */
-	constexpr auto sum_area() {
+	static constexpr auto sum_area() {
 		return 0;
 	}
 
 	template <typename T1, typename... T>
-	constexpr auto sum_area(T1 sum, T... Trest) {
+	static constexpr auto sum_area(T1 sum, T... Trest) {
 		return sum + sum_area(Trest...);
 	}
-}
-
-template <typename C, typename A, A shelfArea, typename... P>
-class Bakery {
 
 	C profits = 0;
 	std::tuple<P...> bakery_products;
@@ -104,16 +99,16 @@ class Bakery {
 	static_assert(std::is_integral<A>::value,
       	"Measure type is not integral.");
         
-   	static_assert(bakery::is_unique<P...>::value,  
+   	static_assert(is_unique<P...>::value,  
         "Bakery products must be unique!");
         
-	static_assert(bakery::is_price_type_correct<C, P...>::value, 
+	static_assert(is_price_type_correct<C, P...>::value, 
 	    "Price type of bakery and product are diffrent!");
 	
-	static_assert(bakery::is_measure_type_correct<A, P...>::value, 
+	static_assert(is_measure_type_correct<A, P...>::value, 
 	    "Measure type of bakery and product are diffrent!");
 	
-	static_assert(bakery::sum_area(P::getArea()...) <= shelfArea, 
+	static_assert(sum_area(P::getArea()...) <= shelfArea, 
 	    "Sum of products area is greater than shelfArea!" );
 		
 public:
@@ -125,7 +120,7 @@ public:
 	}
 	
 	template <class Product> void sell() {
-		static_assert(bakery::contains<Product, P...>::value,
+		static_assert(contains<Product, P...>::value,
 		    "This bakery doesn't contain this product!");
 		
 		static_assert(Product::is_sellable, 
@@ -140,7 +135,7 @@ public:
 	
 	
 	template <class Product> int getProductStock() {
-		static_assert(bakery::contains<Product, P...>::value,
+		static_assert(contains<Product, P...>::value,
 			"This bakery doesn't contain this product!");
 		
 		Product& product = std::get<Product>(bakery_products);
@@ -148,7 +143,7 @@ public:
 	}
 	
 	template <class Product> void restock(int additionalStock) {
-	    static_assert(bakery::contains<Product, P...>::value,
+	    static_assert(contains<Product, P...>::value,
 		    "This bakery doesn't contain this product!");
 
 	    static_assert(Product::is_restockable, "Product is not an apple pie!");
