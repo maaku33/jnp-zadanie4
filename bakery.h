@@ -2,10 +2,8 @@
 #define __BAKERY_H__
 
 #include <type_traits>
-#include <cassert>
 #include <tuple>
 #include <cstddef>
-#include <typeinfo>
 
 /* Checking if elements are unique */
 template<typename T, typename ...Ts>
