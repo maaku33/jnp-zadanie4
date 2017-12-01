@@ -6,87 +6,73 @@
 #include <cstddef>
 
 /* Checking if elements are unique */
-template<typename T, typename ...Ts>
+template <typename T, typename ...Ts>
 struct unique_types;
 
-template<typename T>
+template <typename T>
 struct unique_types<T> {
     static constexpr bool value = true;
 };
 
-template<typename T1, typename T2, typename ...Ts>
+template <typename T1, typename T2, typename ...Ts>
 struct unique_types<T1, T2, Ts...> {
-    static constexpr bool value = !std::is_same<T1,T2>::value && unique_types<T1, Ts...>::value;
+    static constexpr bool value = !std::is_same<T1,T2>::value 
+		&& unique_types<T1, Ts...>::value;
 };
 
 /* Checking if price types are same as in bakery */
-template<typename T, typename ...Ts>
+template <typename T, typename ...Ts>
 struct is_price_type_correct;
 
-template<typename T>
+template <typename T>
 struct is_price_type_correct<T> {
     static constexpr bool value = true ;
 };
 
-template<typename T1, typename T2, typename ...Ts>
+template <typename T1, typename T2, typename ...Ts>
 struct is_price_type_correct<T1, T2, Ts...> {
     static constexpr bool value = (!T2::is_for_sale 
         || std::is_same<T1,typename T2::price_type>::value)
         && is_price_type_correct<T1, Ts...>::value;
 };
 
-
 /* Checking if measures types are same as in bakery */
-template<typename T, typename ...Ts>
+template <typename T, typename ...Ts>
 struct is_measure_type_correct;
 
-template<typename T>
+template <typename T>
 struct is_measure_type_correct<T> {
     static constexpr bool value = true;
 };
 
-template<typename T1, typename T2, typename ...Ts>
+template <typename T1, typename T2, typename ...Ts>
 struct is_measure_type_correct<T1, T2, Ts...> {
     static constexpr bool value =
         std::is_same<T1,typename T2::measure_type>::value 
         && is_measure_type_correct<T1, Ts...>::value;
 };
 
-
-
 /* Checking if product T is one of bakery products */
-template<typename T, typename ...Ts>
+template <typename T, typename ...Ts>
 struct contains;
 
-template<typename T>
+template <typename T>
 struct contains<T> {
     static constexpr bool value = false;
 };
 
-template<typename T1, typename T2, typename ...Ts>
+template <typename T1, typename T2, typename ...Ts>
 struct contains<T1, T2, Ts...> {
     static constexpr bool value = std::is_same<T1, T2>::value
         || contains<T1, Ts...>::value;
 };
-
-
-
-/* Checking if product T from bakery is sellable */
-template <typename T,typename = void>
-struct is_sellable;
-
-template <typename T>
-struct is_sellable<T> {
-    static constexpr bool value = T::is_for_sale;
-};
-
 
 /* Calculates sum area of all products */
 constexpr auto sum_area() {
     return 0;
 }
 
-template<typename T1, typename... T>
+template <typename T1, typename... T>
 constexpr auto sum_area(T1 sum, T... Trest) {
     return sum + sum_area(Trest...);
 }
@@ -127,11 +113,11 @@ public:
 		static_assert(contains<Product,P...>::value,
 		    "This bakery doesn't contain this product!");
 		
-		static_assert(is_sellable<Product>::value, 
+		static_assert(Product::is_for_sale, 
 		    "This product is not for sale!");
 
         Product& product = std::get<Product>(bakery_products);		    		
-		if ( product.getStock() > 0 ) {
+		if (product.getStock() > 0) {
 			product.sell();
 			profits += product.getPrice();
 		}
@@ -139,7 +125,7 @@ public:
 	
 	
 	template <class Product> int getProductStock() {
-		static_assert(contains<Product,P...>::value,
+		static_assert(contains<Product, P...>::value,
 			"This bakery doesn't contain this product!");
 		
 		Product& product = std::get<Product>(bakery_products);
@@ -147,7 +133,7 @@ public:
 	}
 	
 	template <class Product> void restock(int additionalStock) {
-	    static_assert(contains<Product,P...>::value,
+	    static_assert(contains<Product, P...>::value,
 		    "This bakery doesn't contain this product!");
 
 	    static_assert(Product::is_apple_pie, "Product is not an apple pie!");
