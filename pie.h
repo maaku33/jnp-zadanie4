@@ -13,24 +13,23 @@ class Pie {
 		"Price type is not floating point.");
 
     // courtesy of Newton
-    constexpr static double pi_(unsigned n, unsigned i = 1, double last = 2.0) {
+    static constexpr double pi_(unsigned n, unsigned i = 1, double last = 2.0) {
         return i > n + 1 ? 0.0 : last +
             pi_(n, i + 1, last * (double)i / (2.0 * (double)i + 1.0));
     }
 
     // 10 digit precision of pi
-    constexpr static double pi = pi_(30);
+    static constexpr double pi = pi_(30);
     
     int stock;
     const P price;
 
 public:
 
-	static constexpr double c_area = pi * radius * radius;
     using price_type = P;
-    using  measure_type = R;
-    static constexpr bool is_for_sale = sellable;
-    static constexpr bool is_apple_pie = restockable; 
+    using measure_type = R;
+    static constexpr bool is_sellable = sellable;
+    static constexpr bool is_restockable = restockable; 
 
     template <bool s = sellable, typename std::enable_if<!s, int>::type = 0>
     Pie(int initialStock): stock(initialStock), price() {
@@ -42,7 +41,7 @@ public:
         assert(initialStock > 0);
     }
 
-    static double getArea() {
+    constexpr static double getArea() {
         return pi * radius * radius;
     }
 

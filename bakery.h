@@ -63,7 +63,7 @@ struct is_price_type_correct<T> {
 
 template <typename T1, typename T2, typename ...Ts>
 struct is_price_type_correct<T1, T2, Ts...> {
-    static constexpr bool value = (!T2::is_for_sale 
+    static constexpr bool value = (!T2::is_sellable
         || std::is_same<T1,typename T2::price_type>::value)
         && is_price_type_correct<T1, Ts...>::value;
 };
@@ -130,7 +130,7 @@ class Bakery {
 	static_assert(is_measure_type_correct<A, P...>::value, 
 	    "Measure type of bakery and product are diffrent!");
 	
-	static_assert( sum_area(P::c_area...) <= shelfArea, 
+	static_assert( sum_area(P::getArea()...) <= shelfArea, 
 	    "Sum of products area is greater than shelfArea!" );
 		
 public:
@@ -145,7 +145,7 @@ public:
 		static_assert(contains<Product,P...>::value,
 		    "This bakery doesn't contain this product!");
 		
-		static_assert(Product::is_for_sale, 
+		static_assert(Product::is_sellable, 
 		    "This product is not for sale!");
 
         Product& product = std::get<Product>(bakery_products);		    		
@@ -168,7 +168,7 @@ public:
 	    static_assert(contains<Product, P...>::value,
 		    "This bakery doesn't contain this product!");
 
-	    static_assert(Product::is_apple_pie, "Product is not an apple pie!");
+	    static_assert(Product::is_restockable, "Product is not an apple pie!");
 		
 	    Product& product = std::get<Product>(bakery_products);
 		product.restock(additionalStock);		

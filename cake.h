@@ -26,11 +26,10 @@ class Cake {
 
 public:
 
-    static constexpr double c_area = ln2 * length * width;
     using price_type = P;
-    using  measure_type = T;
-    static constexpr bool is_for_sale = sellable;
-    static constexpr bool is_apple_pie = restockable;
+    using measure_type = T;
+    static constexpr bool is_sellable = sellable;
+    static constexpr bool is_restockable = restockable;
     
     template <bool s = sellable, typename std::enable_if<!s, int>::type = 0>
     Cake(int initialStock): stock(initialStock), price() {
@@ -42,7 +41,7 @@ public:
         assert(initialStock > 0);
     }
 
-    static double getArea() {
+    constexpr static double getArea() {
         return ln2 * length * width;
     }
 
