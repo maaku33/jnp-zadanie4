@@ -5,6 +5,7 @@
 #include <tuple>
 
 /* Checking if elements are unique */
+<<<<<<< HEAD
 /*
 template<typename T, typename ...Ts>
 struct unique_types;
@@ -20,6 +21,8 @@ struct unique_types<T1, T2, Ts...> {
 		&& unique_types<T1, Ts...>::value;
 };
 */
+=======
+>>>>>>> 54a3ae084f6cdbf314e608f60376c02ba4f43699
 
 template <typename...>
 struct is_one_of;
@@ -145,7 +148,11 @@ public:
 		static_assert(contains<Product,P...>::value,
 		    "This bakery doesn't contain this product!");
 		
+<<<<<<< HEAD
 		static_assert(Product::is_sellable, 
+=======
+		static_assert(Product::is_for_sale, 
+>>>>>>> 54a3ae084f6cdbf314e608f60376c02ba4f43699
 		    "This product is not for sale!");
 
         Product& product = std::get<Product>(bakery_products);		    		
