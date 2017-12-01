@@ -5,19 +5,16 @@
 #include <tuple>
 
 /* Checking if elements are unique */
-
 template <typename...>
 struct is_one_of;
 
 template <typename F>
-struct is_one_of<F>
-{
+struct is_one_of<F> {
     static constexpr bool value = false;
 };
 
 template <typename F, typename S, typename... T>
-struct is_one_of<F, S, T...>
-{
+struct is_one_of<F, S, T...> {
     static constexpr bool value = std::is_same<F, S>::value
         || is_one_of<F, T...>::value;
 };
@@ -30,9 +27,8 @@ struct is_unique<> {
     static constexpr bool value = true;
 };
 
-template<typename F, typename... T>
-struct is_unique<F, T...>
-{
+template <typename F, typename... T>
+struct is_unique<F, T...> {
     static constexpr bool value = is_unique<T...>::value
         && !is_one_of<F, T...>::value;
 };
