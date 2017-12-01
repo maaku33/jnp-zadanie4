@@ -90,7 +90,7 @@ struct is_apple_pie;
 
 template <typename T>
 struct is_apple_pie<T>{
-    static constexpr bool value = T::apple_pie;
+    static constexpr bool value = T::is_apple_pie;
 };
 
 
@@ -164,12 +164,12 @@ public:
 		    "This bakery doesn't contain this product!");
 	
 	    //TODO uncomment and check if it works
-	    //static_assert(is_apple_pie<Product, 
-	      //  "Product is not an apple pie!");
+	    static_assert(is_apple_pie<Product>::value, 
+	       "Product is not an apple pie!");
 		
 	    Product& product = std::get<Product>(bakery_products);
 		//TODO uncomment and check if it works
-		//product.restock(additionalStock);		
+		product.restock(additionalStock);		
 	}
 };
 

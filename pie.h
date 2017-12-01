@@ -13,7 +13,7 @@ constexpr double pi_(unsigned n, unsigned i = 1, double last = 2.0) {
 // 10 digit precision of pi
 constexpr double pi = pi_(30);
 
-template <typename R, R radius, typename P, bool sellable>
+template <typename R, R radius, typename P, bool sellable, bool restockable>
 class Pie {
 
     static_assert(std::is_integral<R>::value,
@@ -30,7 +30,7 @@ public:
     using price_type = P;
     using  measure_type = R;
     static constexpr bool is_for_sale = sellable;
-    static constexpr bool is_apple_pie = true; //TODO 
+    static constexpr bool is_apple_pie = restockable; 
 
     template <bool s = sellable, typename std::enable_if<!s, int>::type = 0>
     Pie(int initialStock): stock(initialStock), price() {
@@ -50,6 +50,13 @@ public:
         return stock;
     }
     
+    template <typename ... Buffer, bool r = restockable>
+    typename std::enable_if<r, void>::type restock(unsigned amount) {
+        static_assert(sizeof ... (Buffer) == 0,
+            "Template arguments should not be specified.");
+
+        stock += amount;
+    }
 
     template <typename ... Buffer, bool s = sellable>
     typename std::enable_if<s, void>::type sell() {
@@ -69,9 +76,9 @@ public:
 };
 
 template <typename R, R radius>
-using CherryPie = Pie<R, radius, double, false>;
+using CherryPie = Pie<R, radius, double, false, false>;
 
 template <typename R, R radius, typename P>
-using ApplePie = Pie<R, radius, P, true>;
+using ApplePie = Pie<R, radius, P, true, true>;
 
 #endif /* __PIE_H__ */

@@ -13,10 +13,9 @@ constexpr double ln_(double x, unsigned n, unsigned i = 1, double last = 1) {
 // 9 digit precision of natural log of 2
 constexpr double ln2 = 3.0 * ln_(0.25, 20) + ln_(0.024, 20);
 
-template <typename T, T length, T width, typename P, bool sellable>
+template <typename T, T length, T width, typename P, bool sellable, bool restockable>
 class Cake {
     
-   
     static_assert(std::is_integral<T>::value,
         "Measure type is not integral.");
     static_assert(std::is_floating_point<P>::value,
@@ -31,7 +30,7 @@ public:
     using price_type = P;
     using  measure_type = T;
     static constexpr bool is_for_sale = sellable;
-    static constexpr bool is_apple_pie = false;
+    static constexpr bool is_apple_pie = restockable;
     
     template <bool s = sellable, typename std::enable_if<!s, int>::type = 0>
     Cake(int initialStock): stock(initialStock), price() {
@@ -69,9 +68,9 @@ public:
 };
 
 template <typename T, T length, T width>
-using CheeseCake = Cake<T, length, width, double, false>;
+using CheeseCake = Cake<T, length, width, double, false, false>;
 
 template <typename T, T length, T width, typename P>
-using CreamCake = Cake<T, length, width, P, true>;
+using CreamCake = Cake<T, length, width, P, true, false>;
 
 #endif /* __CAKE_H__ */
