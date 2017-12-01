@@ -18,9 +18,9 @@ class Cake {
     
    
     static_assert(std::is_integral<T>::value,
-        "First template parameter is not integral.");
+        "Measure type is not integral.");
     static_assert(std::is_floating_point<P>::value,
-        "Fourth template parameter is not floating point.");
+    	"Price type is not floating point.");
 
     int stock;
     const P price;
@@ -31,6 +31,7 @@ public:
     using price_type = P;
     using  measure_type = T;
     static constexpr bool is_for_sale = sellable;
+    static constexpr bool is_apple_pie = false;
     
     template <bool s = sellable, typename std::enable_if<!s, int>::type = 0>
     Cake(int initialStock): stock(initialStock), price() {

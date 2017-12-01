@@ -17,20 +17,20 @@ template <typename R, R radius, typename P, bool sellable>
 class Pie {
 
     static_assert(std::is_integral<R>::value,
-        "First template parameter not integral.");
+		"Measure type is not integral.");
     static_assert(std::is_floating_point<P>::value,
-        "Third template parameter not floating point.");
+		"Price type is not floating point.");
 
     int stock;
     const P price;
 
 public:
 
-static constexpr double c_area = pi * radius * radius;
+	static constexpr double c_area = pi * radius * radius;
     using price_type = P;
     using  measure_type = R;
     static constexpr bool is_for_sale = sellable;
-
+    static constexpr bool is_apple_pie = true; //TODO 
 
     template <bool s = sellable, typename std::enable_if<!s, int>::type = 0>
     Pie(int initialStock): stock(initialStock), price() {

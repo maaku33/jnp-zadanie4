@@ -8,27 +8,21 @@
 #include <typeinfo>
 
 /* Checking if elements are unique */
-template< class T > using invoke = typename T :: type ;
 
-template< class C, class I, class E > using if_t     = invoke< std::conditional< C{}, I, E> >;
+template<typename T, typename ...Ts>
+struct unique_types;
 
-template< class T > struct id{};
-struct empty{};
+template<typename T>
+struct unique_types<T> {
+    static constexpr bool value = true ;
+};
 
-template< class A, class B > struct base : A, B {};
+template<typename T1, typename T2, typename ...Ts>
+struct unique_types<T1, T2, Ts...> {
+    static constexpr bool value = !std::is_same<T1,T2>::value && unique_types<T1, Ts...>::value;
+};
 
-template< class B , class ... > struct is_unique_impl;
-
-template< class B > struct is_unique_impl<B>: std::true_type{};
-
-template< class B, class T, class ... U>
-struct is_unique_impl<B, T, U...> : if_t< std::is_base_of< id<T>, B>, std::false_type, is_unique_impl< base<B,id<T>>, U...> >{};
-
-template< class ...T >struct is_unique : is_unique_impl< empty, T ... > {};
-
-
-
-/* Checking if pricetypes are same as in bakery */
+/* Checking if price types are same as in bakery */
 template<typename T, typename ...Ts>
 struct is_price_type_correct;
 
@@ -39,7 +33,9 @@ struct is_price_type_correct<T> {
 
 template<typename T1, typename T2, typename ...Ts>
 struct is_price_type_correct<T1, T2, Ts...> {
-    static constexpr bool value = (!T2::is_for_sale || std::is_same<T1,typename T2::price_type>::value) && is_price_type_correct<T1, Ts...>::value;
+    static constexpr bool value = (!T2::is_for_sale 
+        || std::is_same<T1,typename T2::price_type>::value)
+        && is_price_type_correct<T1, Ts...>::value;
 };
 
 
@@ -54,7 +50,9 @@ struct is_measure_type_correct<T> {
 
 template<typename T1, typename T2, typename ...Ts>
 struct is_measure_type_correct<T1, T2, Ts...> {
-    static constexpr bool value = std::is_same<T1,typename T2::measure_type>::value && is_measure_type_correct<T1, Ts...>::value;
+    static constexpr bool value =
+        std::is_same<T1,typename T2::measure_type>::value 
+        && is_measure_type_correct<T1, Ts...>::value;
 };
 
 
@@ -70,7 +68,8 @@ struct contains<T> {
 
 template<typename T1, typename T2, typename ...Ts>
 struct contains<T1, T2, Ts...> {
-    static constexpr bool value = std::is_same<T1, T2>::value || contains<T1, Ts...>::value;
+    static constexpr bool value = std::is_same<T1, T2>::value
+        || contains<T1, Ts...>::value;
 };
 
 
@@ -81,8 +80,19 @@ struct is_sellable;
 
 template <typename T>
 struct is_sellable<T>{
- static constexpr bool value = T::is_for_sale;
+    static constexpr bool value = T::is_for_sale;
 };
+
+
+/* Checking if product is ApplePie */
+template <typename T,typename = void>
+struct is_apple_pie;
+
+template <typename T>
+struct is_apple_pie<T>{
+    static constexpr bool value = T::apple_pie;
+};
+
 
 /* Calculates sum area of all product */
 constexpr auto sum_area(){
@@ -101,22 +111,22 @@ class Bakery {
 	std::tuple<P...> bakery_products;
 	
 	static_assert(std::is_floating_point<C>::value,
-        "First template parameter is not floating point.");
+	    "Price type is not floating point.");
         
 	static_assert(std::is_integral<A>::value,
-        "Second template parameter is not integral.");
+        "Measure type is not integral.");
         
-        static_assert(is_unique<P...>::value,  
+    static_assert(unique_types<P...>::value,  
         "Bakery products must be unique!");
         
 	static_assert(is_price_type_correct<C, P...>::value , 
-	"Price type of bakery and product are diffrent!");
+	    "Price type of bakery and product are diffrent!");
 	
 	static_assert(is_measure_type_correct<A, P...>::value , 
-	"Measure type of bakery and product are diffrent!");
+	    "Measure type of bakery and product are diffrent!");
 	
 	static_assert( sum_area(P::c_area...) <= shelfArea, 
-	"Sum of products area is greater than shelfArea!" );
+	    "Sum of products area is greater than shelfArea!" );
 		
 public:
 	
@@ -128,12 +138,12 @@ public:
 	
 	template <class Product> void sell(){
 		static_assert(contains<Product,P...>::value,
-		"This bakery doesn't contain this product!");
+		    "This bakery doesn't contain this product!");
 		
 		static_assert(is_sellable<Product>::value, 
-		"This product is not for sale!");
-		
-		Product& product = std::get<Product>(bakery_products);		
+		    "This product is not for sale!");
+
+        Product& product = std::get<Product>(bakery_products);		    		
 		if( product.getStock() > 0 ){
 			product.sell();
 			profits += product.getPrice();
@@ -148,11 +158,18 @@ public:
 			return product.getStock();
 	}
 	
-	
-	//TODO
+	//TODO i assumed it is void but it is not specified in text
 	template <class Product> void restock(int additionalStock){
-	Product& product = std::get<Product>(bakery_products);
-			
+	    static_assert(contains<Product,P...>::value,
+		    "This bakery doesn't contain this product!");
+	
+	    //TODO uncomment and check if it works
+	    //static_assert(is_apple_pie<Product, 
+	      //  "Product is not an apple pie!");
+		
+	    Product& product = std::get<Product>(bakery_products);
+		//TODO uncomment and check if it works
+		//product.restock(additionalStock);		
 	}
 };
 
