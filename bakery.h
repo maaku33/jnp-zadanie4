@@ -8,13 +8,12 @@
 #include <typeinfo>
 
 /* Checking if elements are unique */
-
 template<typename T, typename ...Ts>
 struct unique_types;
 
 template<typename T>
 struct unique_types<T> {
-    static constexpr bool value = true ;
+    static constexpr bool value = true;
 };
 
 template<typename T1, typename T2, typename ...Ts>
@@ -45,7 +44,7 @@ struct is_measure_type_correct;
 
 template<typename T>
 struct is_measure_type_correct<T> {
-    static constexpr bool value = true ;
+    static constexpr bool value = true;
 };
 
 template<typename T1, typename T2, typename ...Ts>
@@ -63,7 +62,7 @@ struct contains;
 
 template<typename T>
 struct contains<T> {
-    static constexpr bool value = false ;
+    static constexpr bool value = false;
 };
 
 template<typename T1, typename T2, typename ...Ts>
@@ -79,28 +78,18 @@ template <typename T,typename = void>
 struct is_sellable;
 
 template <typename T>
-struct is_sellable<T>{
+struct is_sellable<T> {
     static constexpr bool value = T::is_for_sale;
 };
 
 
-/* Checking if product is ApplePie */
-template <typename T,typename = void>
-struct is_apple_pie;
-
-template <typename T>
-struct is_apple_pie<T>{
-    static constexpr bool value = T::is_apple_pie;
-};
-
-
-/* Calculates sum area of all product */
-constexpr auto sum_area(){
+/* Calculates sum area of all products */
+constexpr auto sum_area() {
     return 0;
 }
 
 template<typename T1, typename... T>
-constexpr auto sum_area(T1 sum, T... Trest){
+constexpr auto sum_area(T1 sum, T... Trest) {
     return sum + sum_area(Trest...);
 }
 
@@ -119,10 +108,10 @@ class Bakery {
     static_assert(unique_types<P...>::value,  
         "Bakery products must be unique!");
         
-	static_assert(is_price_type_correct<C, P...>::value , 
+	static_assert(is_price_type_correct<C, P...>::value, 
 	    "Price type of bakery and product are diffrent!");
 	
-	static_assert(is_measure_type_correct<A, P...>::value , 
+	static_assert(is_measure_type_correct<A, P...>::value, 
 	    "Measure type of bakery and product are diffrent!");
 	
 	static_assert( sum_area(P::c_area...) <= shelfArea, 
@@ -130,13 +119,13 @@ class Bakery {
 		
 public:
 	
-	Bakery(P... products) : bakery_products(products...){}
+	Bakery(P... products) : bakery_products(products...) {}
 	
 	C getProfits() {
 		return profits;
 	}
 	
-	template <class Product> void sell(){
+	template <class Product> void sell() {
 		static_assert(contains<Product,P...>::value,
 		    "This bakery doesn't contain this product!");
 		
@@ -144,31 +133,28 @@ public:
 		    "This product is not for sale!");
 
         Product& product = std::get<Product>(bakery_products);		    		
-		if( product.getStock() > 0 ){
+		if ( product.getStock() > 0 ) {
 			product.sell();
 			profits += product.getPrice();
 		}
 	}
 	
 	
-	template <class Product> int getProductStock(){
+	template <class Product> int getProductStock() {
 		static_assert(contains<Product,P...>::value,
 			"This bakery doesn't contain this product!");
+		
 		Product& product = std::get<Product>(bakery_products);
-			return product.getStock();
+		return product.getStock();
 	}
 	
-	//TODO i assumed it is void but it is not specified in text
-	template <class Product> void restock(int additionalStock){
+	template <class Product> void restock(int additionalStock) {
 	    static_assert(contains<Product,P...>::value,
 		    "This bakery doesn't contain this product!");
-	
-	    //TODO uncomment and check if it works
-	    static_assert(is_apple_pie<Product>::value, 
-	       "Product is not an apple pie!");
+
+	    static_assert(Product::is_apple_pie, "Product is not an apple pie!");
 		
 	    Product& product = std::get<Product>(bakery_products);
-		//TODO uncomment and check if it works
 		product.restock(additionalStock);		
 	}
 };
