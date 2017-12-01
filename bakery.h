@@ -5,20 +5,6 @@
 #include <tuple>
 
 /* Checking if elements are unique */
-/*
-template<typename T, typename ...Ts>
-struct unique_types;
-
-template<typename T>
-struct unique_types<T> {
-    static constexpr bool value = true;
-};
-
-template<typename T1, typename T2, typename ...Ts>
-struct unique_types<T1, T2, Ts...> {
-    static constexpr bool value = !std::is_same<T1,T2>::value && unique_types<T1, Ts...>::value;
-};
-*/
 
 template <typename...>
 struct is_one_of;
@@ -101,18 +87,6 @@ struct contains<T1, T2, Ts...> {
         || contains<T1, Ts...>::value;
 };
 
-
-
-/* Checking if product T from bakery is sellable */
-template <typename T,typename = void>
-struct is_sellable;
-
-template <typename T>
-struct is_sellable<T> {
-    static constexpr bool value = T::is_for_sale;
-};
-
-
 /* Calculates sum area of all products */
 constexpr auto sum_area() {
     return 0;
@@ -159,7 +133,7 @@ public:
 		static_assert(contains<Product,P...>::value,
 		    "This bakery doesn't contain this product!");
 		
-		static_assert(is_sellable<Product>::value, 
+		static_assert(Product::is_for_sale, 
 		    "This product is not for sale!");
 
         Product& product = std::get<Product>(bakery_products);		    		
