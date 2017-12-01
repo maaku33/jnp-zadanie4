@@ -4,15 +4,6 @@
 #include <type_traits>
 #include <cassert>
 
-// returns the value of n-th Taylor polynomial of ln(1 + x) at x
-constexpr double ln_(double x, unsigned n, unsigned i = 1, double last = 1) {
-    return i >= n ? 0.0 : (i % 2 == 0 ? -1 : 1) *
-        x * last / i + ln_(x, n, i + 1, x * last);
-}
-
-// 9 digit precision of natural log of 2
-constexpr double ln2 = 3.0 * ln_(0.25, 20) + ln_(0.024, 20);
-
 template <typename T, T length, T width, typename P, bool sellable, bool restockable>
 class Cake {
     
@@ -20,6 +11,15 @@ class Cake {
         "Measure type is not integral.");
     static_assert(std::is_floating_point<P>::value,
     	"Price type is not floating point.");
+
+    // returns the value of n-th Taylor polynomial of ln(1 + x) at x
+    constexpr static double ln_(double x, unsigned n, unsigned i = 1, double last = 1) {
+        return i >= n ? 0.0 : (i % 2 == 0 ? -1 : 1) *
+            x * last / i + ln_(x, n, i + 1, x * last);
+    }
+
+    // 9 digit precision of natural log of 2
+    constexpr static double ln2 = 3.0 * ln_(0.25, 20) + ln_(0.024, 20);
 
     int stock;
     const P price;

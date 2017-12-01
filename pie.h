@@ -4,15 +4,6 @@
 #include <type_traits>
 #include <cassert>
 
-// courtesy of Newton
-constexpr double pi_(unsigned n, unsigned i = 1, double last = 2.0) {
-    return i > n + 1 ? 0.0 : last +
-        pi_(n, i + 1, last * (double)i / (2.0 * (double)i + 1.0));
-}
-
-// 10 digit precision of pi
-constexpr double pi = pi_(30);
-
 template <typename R, R radius, typename P, bool sellable, bool restockable>
 class Pie {
 
@@ -21,6 +12,15 @@ class Pie {
     static_assert(std::is_floating_point<P>::value,
 		"Price type is not floating point.");
 
+    // courtesy of Newton
+    constexpr static double pi_(unsigned n, unsigned i = 1, double last = 2.0) {
+        return i > n + 1 ? 0.0 : last +
+            pi_(n, i + 1, last * (double)i / (2.0 * (double)i + 1.0));
+    }
+
+    // 10 digit precision of pi
+    constexpr static double pi = pi_(30);
+    
     int stock;
     const P price;
 
