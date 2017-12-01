@@ -3,10 +3,10 @@
 
 #include <type_traits>
 #include <tuple>
-#include <cstddef>
 
 /* Checking if elements are unique */
-template <typename T, typename ...Ts>
+/*
+template<typename T, typename ...Ts>
 struct unique_types;
 
 template <typename T>
@@ -18,6 +18,38 @@ template <typename T1, typename T2, typename ...Ts>
 struct unique_types<T1, T2, Ts...> {
     static constexpr bool value = !std::is_same<T1,T2>::value 
 		&& unique_types<T1, Ts...>::value;
+};
+*/
+
+template <typename...>
+struct is_one_of;
+
+template <typename F>
+struct is_one_of<F>
+{
+    static constexpr bool value = false;
+};
+
+template <typename F, typename S, typename... T>
+struct is_one_of<F, S, T...>
+{
+    static constexpr bool value = std::is_same<F, S>::value
+        || is_one_of<F, T...>::value;
+};
+
+template <typename...>
+struct is_unique;
+
+template <>
+struct is_unique<> {
+    static constexpr bool value = true;
+};
+
+template<typename F, typename... T>
+struct is_unique<F, T...>
+{
+    static constexpr bool value = is_unique<T...>::value
+        && !is_one_of<F, T...>::value;
 };
 
 /* Checking if price types are same as in bakery */
@@ -87,9 +119,9 @@ class Bakery {
 	    "Price type is not floating point.");
         
 	static_assert(std::is_integral<A>::value,
-        "Measure type is not integral.");
+      	"Measure type is not integral.");
         
-    static_assert(unique_types<P...>::value,  
+   	static_assert(is_unique<P...>::value,  
         "Bakery products must be unique!");
         
 	static_assert(is_price_type_correct<C, P...>::value, 
