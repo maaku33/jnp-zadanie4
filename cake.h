@@ -15,16 +15,23 @@ constexpr double ln2 = 3.0 * ln_(0.25, 20) + ln_(0.024, 20);
 
 template <typename T, T length, T width, typename P, bool sellable>
 class Cake {
-
+    
+   
     static_assert(std::is_integral<T>::value,
-        "First template parameter not integral.");
+        "First template parameter is not integral.");
     static_assert(std::is_floating_point<P>::value,
-        "Fourth template parameter not floating point.");
+        "Fourth template parameter is not floating point.");
 
     int stock;
     const P price;
 
 public:
+
+    static constexpr double c_area = ln2 * length * width;
+    using price_type = P;
+    using  measure_type = T;
+    static constexpr bool is_for_sale = sellable;
+    
     template <bool s = sellable, typename std::enable_if<!s, int>::type = 0>
     Cake(int initialStock): stock(initialStock), price() {
         assert(initialStock > 0);

@@ -25,6 +25,13 @@ class Pie {
     const P price;
 
 public:
+
+static constexpr double c_area = pi * radius * radius;
+    using price_type = P;
+    using  measure_type = R;
+    static constexpr bool is_for_sale = sellable;
+
+
     template <bool s = sellable, typename std::enable_if<!s, int>::type = 0>
     Pie(int initialStock): stock(initialStock), price() {
         assert(initialStock > 0);
@@ -42,6 +49,7 @@ public:
     int getStock() {
         return stock;
     }
+    
 
     template <typename ... Buffer, bool s = sellable>
     typename std::enable_if<s, void>::type sell() {
